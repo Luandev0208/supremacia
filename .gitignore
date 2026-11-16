@@ -1,0 +1,14 @@
+# Godot 4
+.godot/
+*.tmp
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Arquivos locais e credenciais
+.env
+.env.*
+*.log
