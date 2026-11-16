@@ -1,7 +1,7 @@
 extends Control
 
 const TERRITORY_SCENE := preload("res://scenes/territory.tscn")
-const LAYOUT := {
+var territory_layout: Dictionary = {
 	"aurora": [Vector2(55, 60), PackedVector2Array([Vector2(0,25),Vector2(45,0),Vector2(112,16),Vector2(100,83),Vector2(32,92)])],
 	"brisa": [Vector2(180, 60), PackedVector2Array([Vector2(0,17),Vector2(70,0),Vector2(121,34),Vector2(98,91),Vector2(22,83)])],
 	"cedro": [Vector2(60, 180), PackedVector2Array([Vector2(0,20),Vector2(73,0),Vector2(112,37),Vector2(94,97),Vector2(18,84)])],
@@ -17,12 +17,12 @@ var views: Dictionary = {}
 func build_map(state: GameState) -> void:
 	game_state = state
 	views.clear()
-	for territory_id: String in LAYOUT:
+	for territory_id: String in territory_layout:
 		var view := TERRITORY_SCENE.instantiate()
 		var territory: TerritoryData = game_state.territories[territory_id]
 		add_child(view)
-		view.position = LAYOUT[territory_id][0]
-		view.setup(territory, game_state.players[territory.owner_id].color, LAYOUT[territory_id][1])
+		view.position = territory_layout[territory_id][0]
+		view.setup(territory, game_state.players[territory.owner_id].color, territory_layout[territory_id][1])
 		view.pressed.connect(_on_territory_pressed)
 		views[territory_id] = view
 
@@ -33,4 +33,10 @@ func _on_territory_pressed(territory_id: String) -> void:
 
 func refresh_territory(territory_id: String) -> void:
 	if views.has(territory_id):
+		var territory: TerritoryData = game_state.territories[territory_id]
+		views[territory_id].set_owner_color(game_state.players[territory.owner_id].color)
 		views[territory_id].refresh()
+
+func show_attack_source(territory_id: String) -> void:
+	for id: String in views:
+		views[id].set_attack_source(id == territory_id)

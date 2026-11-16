@@ -5,6 +5,7 @@ signal pressed(territory_id: String)
 var territory: TerritoryData
 var owner_color: Color
 var selected := false
+var attack_source := false
 @onready var shape: Polygon2D = $Shape
 @onready var border: Line2D = $Border
 @onready var collision: CollisionPolygon2D = $Collision
@@ -29,10 +30,23 @@ func set_selected(value: bool) -> void:
 	selected = value
 	_refresh_color()
 
+func set_attack_source(value: bool) -> void:
+	attack_source = value
+	_refresh_color()
+
+func set_owner_color(color: Color) -> void:
+	owner_color = color
+	_refresh_color()
+
 func _refresh_color() -> void:
 	shape.color = owner_color.lightened(0.18) if selected else owner_color
-	border.width = 5.0 if selected else 3.0
-	border.default_color = Color.WHITE if selected else Color("#253249")
+	border.width = 5.0 if selected or attack_source else 3.0
+	if selected:
+		border.default_color = Color.WHITE
+	elif attack_source:
+		border.default_color = Color("#f5c451")
+	else:
+		border.default_color = Color("#253249")
 
 func _input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
