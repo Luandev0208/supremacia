@@ -46,14 +46,41 @@ var territory_layout: Dictionary = {
 	"australia": [Vector2(640, 381), Vector2(82, 72)]
 }
 var game_state: GameState
-var views: Dictionary = {}
+var views: Dictionary[String, TerritoryView] = {}
+const BOARD_SIZE := Vector2(768, 476)
+var board := Node2D.new()
+
+func _ready() -> void:
+	add_child(board)
+	resized.connect(_fit_board)
+	_fit_board()
+
+func _fit_board() -> void:
+	var board_scale := minf(size.x / BOARD_SIZE.x, size.y / BOARD_SIZE.y)
+	board.scale = Vector2.ONE * maxf(0.01, board_scale)
+	board.position = (size - BOARD_SIZE * board.scale) / 2.0
+	queue_redraw()
+
 
 func _draw() -> void:
-	var globe: PackedVector2Array = []
-	for index in 64:
-		var angle := TAU * index / 64.0
-		globe.append(Vector2(380.0 + cos(angle) * 374.0, 236.0 + sin(angle) * 226.0))
-	draw_colored_polygon(globe, Color("#e9ecef"))
+	# Mar em camadas, sem o antigo fundo circular de planeta.
+	var ocean_top := Color("#0d6684")
+	var ocean_bottom := Color("#07364f")
+	for band in 10:
+		var band_height := size.y / 10.0
+		draw_rect(Rect2(0, band * band_height, size.x, band_height + 1.0), ocean_top.lerp(ocean_bottom, band / 9.0))
+	for x in range(20, int(size.x), 48):
+		draw_line(Vector2(x, 0), Vector2(x, size.y), Color(0.5, 0.82, 0.9, 0.07), 1.0)
+	for y in range(20, int(size.y), 48):
+		draw_line(Vector2(0, y), Vector2(size.x, y), Color(0.5, 0.82, 0.9, 0.07), 1.0)
+	draw_set_transform(board.position, 0, board.scale)
+	# Massas continentais unem visualmente os territórios e aproximam o mapa da referência.
+	_draw_landmass(PackedVector2Array([Vector2(8,38),Vector2(62,20),Vector2(145,24),Vector2(232,12),Vector2(253,64),Vector2(223,135),Vector2(160,190),Vector2(83,220),Vector2(24,175),Vector2(5,105)]), Color("#d98a28"))
+	_draw_landmass(PackedVector2Array([Vector2(125,205),Vector2(210,215),Vector2(255,270),Vector2(230,365),Vector2(205,428),Vector2(158,382),Vector2(135,305)]), Color("#31a84b"))
+	_draw_landmass(PackedVector2Array([Vector2(268,40),Vector2(348,28),Vector2(443,42),Vector2(515,88),Vector2(476,168),Vector2(387,178),Vector2(294,166),Vector2(271,108)]), Color("#428fd4"))
+	_draw_landmass(PackedVector2Array([Vector2(303,183),Vector2(413,175),Vector2(483,220),Vector2(480,322),Vector2(436,424),Vector2(358,415),Vector2(329,327)]), Color("#7b56ae"))
+	_draw_landmass(PackedVector2Array([Vector2(445,25),Vector2(564,8),Vector2(702,36),Vector2(754,105),Vector2(740,225),Vector2(682,302),Vector2(582,306),Vector2(505,247),Vector2(475,160)]), Color("#e2b51f"))
+	_draw_landmass(PackedVector2Array([Vector2(540,310),Vector2(650,301),Vector2(751,328),Vector2(758,445),Vector2(666,468),Vector2(575,420)]), Color("#df3d8e"))
 	if game_state == null:
 		return
 	var drawn_connections: Dictionary = {}
@@ -63,38 +90,41 @@ func _draw() -> void:
 			if drawn_connections.has(key) or not territory_layout.has(neighbor_id):
 				continue
 			drawn_connections[key] = true
-			draw_dashed_line(_territory_center(territory.id), _territory_center(neighbor_id), Color(0.32, 0.36, 0.4, 0.38), 1.0, 5.0)
-	var font := ThemeDB.fallback_font
-	draw_string(font, Vector2(22, 32), "AMÉRICA DO NORTE  +5", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#d97706"))
-	draw_string(font, Vector2(140, 445), "AMÉRICA DO SUL  +2", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#22a447"))
-	draw_string(font, Vector2(285, 32), "EUROPA  +5", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#2878c8"))
-	draw_string(font, Vector2(320, 190), "ÁFRICA  +3", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#6f4cab"))
-	draw_string(font, Vector2(535, 22), "ÁSIA  +7", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#d6a600"))
-	draw_string(font, Vector2(635, 465), "OCEANIA  +2", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#e33188"))
+			draw_dashed_line(_territory_center(territory.id), _territory_center(neighbor_id), Color(0.78, 0.9, 0.94, 0.5), 1.2, 5.0)
+
+func _draw_landmass(points: PackedVector2Array, continent_color: Color) -> void:
+	var fill := continent_color.darkened(0.28)
+	fill.a = 0.82
+	draw_colored_polygon(points, fill)
+	var border_points := points + PackedVector2Array([points[0]])
+	draw_polyline(border_points, continent_color.lightened(0.22), 2.0, true)
 
 func _gui_input(event: InputEvent) -> void:
 	if not (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
 		return
-	for territory_id: String in territory_layout:
-		var territory_position: Vector2 = territory_layout[territory_id][0]
-		var territory_polygon := _make_polygon(territory_layout[territory_id][1], territory_id)
-		if Geometry2D.is_point_in_polygon(event.position - territory_position, territory_polygon):
-			_on_territory_pressed(territory_id)
+	var point: Vector2 = board.transform.affine_inverse() * event.position
+	var ids := views.keys()
+	ids.reverse()
+	for territory_id: String in ids:
+		if views[territory_id].contains_point(point):
+			game_state.select_territory(territory_id)
 			accept_event()
 			return
 
 func build_map(state: GameState) -> void:
 	game_state = state
+	for view: TerritoryView in views.values():
+		board.remove_child(view)
+		view.queue_free()
 	views.clear()
-	queue_redraw()
 	for territory_id: String in territory_layout:
-		var view := TERRITORY_SCENE.instantiate()
+		var view: TerritoryView = TERRITORY_SCENE.instantiate()
 		var territory: TerritoryData = game_state.territories[territory_id]
-		add_child(view)
+		board.add_child(view)
 		view.position = territory_layout[territory_id][0]
 		view.setup(territory, game_state.players[territory.owner_id].color, _make_polygon(territory_layout[territory_id][1], territory_id))
-		view.pressed.connect(_on_territory_pressed)
 		views[territory_id] = view
+	queue_redraw()
 
 func _make_polygon(size: Vector2, territory_id: String) -> PackedVector2Array:
 	var variation: int = absi(territory_id.hash()) % 3
@@ -113,10 +143,9 @@ func _territory_center(territory_id: String) -> Vector2:
 	var territory_size: Vector2 = territory_layout[territory_id][1]
 	return territory_position + territory_size / 2.0
 
-func _on_territory_pressed(territory_id: String) -> void:
-	if game_state.select_territory(territory_id):
-		for id: String in views:
-			views[id].set_selected(id == territory_id)
+func show_selection(territory_id: String) -> void:
+	for id: String in views:
+		views[id].set_selected(id == territory_id)
 
 func refresh_territory(territory_id: String) -> void:
 	if views.has(territory_id):

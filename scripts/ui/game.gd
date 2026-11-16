@@ -16,6 +16,10 @@ extends Control
 @onready var reinforcement_detail_label: Label = %ReinforcementDetailLabel
 @onready var victory_overlay: Control = %VictoryOverlay
 @onready var victory_title: Label = %VictoryTitle
+@onready var player_1_card: PanelContainer = %Player1Card
+@onready var player_2_card: PanelContainer = %Player2Card
+@onready var player_1_summary: Label = %Player1Summary
+@onready var player_2_summary: Label = %Player2Summary
 var game_state := GameState.new()
 
 func _ready() -> void:
@@ -29,7 +33,8 @@ func _ready() -> void:
 
 func _refresh_interface() -> void:
 	var player := game_state.players[game_state.turn.current_player_index]
-	turn_label.text = "Rodada %d  •  %s  •  %s  •  Reserva: %d" % [game_state.turn.round_number, player.display_name, game_state.turn.phase_name(), player.reserve_armies]
+	turn_label.text = "RODADA %d  •  %s\n%s  •  RESERVA %d" % [game_state.turn.round_number, game_state.turn.phase_name().to_upper(), player.display_name.to_upper(), player.reserve_armies]
+	_refresh_player_cards()
 	if game_state.turn.round_number == 1:
 		advance_phase_button.text = "Encerrar posicionamento"
 	elif game_state.turn.round_number == 2:
@@ -39,10 +44,27 @@ func _refresh_interface() -> void:
 	advance_phase_button.disabled = not game_state.can_advance_phase()
 	attack_origin_label.text = "Origem: nenhuma" if game_state.attack_source_id.is_empty() else "Origem: %s" % game_state.territories[game_state.attack_source_id].display_name
 	movement_source_label.text = "Origem: nenhuma" if game_state.movement_source_id.is_empty() else "Origem: %s" % game_state.territories[game_state.movement_source_id].display_name
+	map_controller.show_selection(game_state.selected_territory_id)
+	if game_state.selected_territory_id.is_empty():
+		selection_label.text = "Clique em um território do mapa."
 	map_controller.show_attack_source(game_state.attack_source_id)
 	map_controller.show_movement_source(game_state.movement_source_id)
 	_update_phase_controls()
 	_refresh_actions()
+
+func _refresh_player_cards() -> void:
+	player_1_summary.text = "%d territórios  •  %d exércitos" % [game_state.controlled_territory_count(0), _army_count(0)]
+	player_2_summary.text = "%d territórios  •  %d exércitos" % [game_state.controlled_territory_count(1), _army_count(1)]
+	var current_player := game_state.turn.current_player_index
+	player_1_card.modulate = Color.WHITE if current_player == 0 else Color(0.58, 0.64, 0.67, 1)
+	player_2_card.modulate = Color.WHITE if current_player == 1 else Color(0.58, 0.64, 0.67, 1)
+
+func _army_count(player_id: int) -> int:
+	var total := 0
+	for territory: TerritoryData in game_state.territories.values():
+		if territory.owner_id == player_id:
+			total += territory.armies
+	return total
 
 func _update_phase_controls() -> void:
 	var phase := game_state.turn.current_phase
@@ -69,6 +91,7 @@ func _update_phase_controls() -> void:
 		phase_hint_label.text = "Escolha a origem, o destino próprio conectado e a quantidade a mover."
 
 func _on_territory_selected(territory: TerritoryData) -> void:
+	map_controller.show_selection(territory.id)
 	var player := game_state.players[game_state.turn.current_player_index]
 	if game_state.turn.current_phase == TurnManager.Phase.ATTACK and territory.owner_id == player.id and territory.armies >= 2:
 		game_state.choose_attack_source(territory.id)
@@ -100,8 +123,8 @@ func _refresh_actions() -> void:
 		can_attack = game_state.can_attack(game_state.attack_source_id, selected.id)
 		if not game_state.movement_source_id.is_empty():
 			var source: TerritoryData = game_state.territories[game_state.movement_source_id]
+			movement_amount.set_value_no_signal(mini(int(movement_amount.value), source.armies - 1))
 			movement_amount.max_value = source.armies - 1
-			movement_amount.value = mini(int(movement_amount.value), source.armies - 1)
 			can_move = game_state.can_move_armies(game_state.movement_source_id, selected.id, int(movement_amount.value))
 	place_army_button.disabled = not can_place
 	attack_button.disabled = not can_attack

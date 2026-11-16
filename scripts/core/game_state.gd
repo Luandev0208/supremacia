@@ -37,7 +37,7 @@ func setup(shuffle_territories: bool = true) -> void:
 	_grant_reinforcements_to_current_player()
 
 func select_territory(territory_id: String) -> bool:
-	if not territories.has(territory_id):
+	if winner_id >= 0 or not territories.has(territory_id):
 		return false
 	selected_territory_id = territory_id
 	territory_selected.emit(territories[territory_id])
@@ -188,6 +188,7 @@ func advance_phase() -> bool:
 	if not can_advance_phase():
 		return false
 	turn.advance_phase(players.size())
+	selected_territory_id = ""
 	attack_source_id = ""
 	movement_source_id = ""
 	if turn.current_phase == TurnManager.Phase.MOVEMENT:

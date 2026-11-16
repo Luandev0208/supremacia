@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/map_controller.gd" id="2"]
+[ext_resource type="Theme" path="res://themes/supremacia_theme.tres" id="3"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -11,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+theme = ExtResource("3")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -19,29 +21,29 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.035, 0.063, 0.11, 1)
+color = Color(0.018, 0.055, 0.078, 1)
 
 [node name="Header" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 92.0
+offset_bottom = 96.0
 grow_horizontal = 2
 
 [node name="Content" type="HBoxContainer" parent="Header"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="Back" type="Button" parent="Header/Content"]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "← Menu"
+text = "←  MENU"
 
 [node name="Title" type="Label" parent="Header/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.91, 0.72, 0.22, 1)
-theme_override_font_sizes/font_size = 26
-text = "Supremacia"
+theme_override_colors/font_color = Color(1, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 25
+text = "SUPREMACIA"
 
 [node name="Spacer" type="Control" parent="Header/Content"]
 layout_mode = 2
@@ -50,96 +52,144 @@ size_flags_horizontal = 3
 [node name="TurnLabel" type="Label" parent="Header/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="Player1Card" type="PanelContainer" parent="Header/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Header/Content/Player1Card"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Player1Name" type="Label" parent="Header/Content/Player1Card/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.33, 1)
+theme_override_font_sizes/font_size = 14
+text = "● JOGADOR 1"
+
+[node name="Player1Summary" type="Label" parent="Header/Content/Player1Card/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 11
+text = "21 territórios"
+
+[node name="Player2Card" type="PanelContainer" parent="Header/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="Header/Content/Player2Card"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Player2Name" type="Label" parent="Header/Content/Player2Card/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.65, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "● JOGADOR 2"
+
+[node name="Player2Summary" type="Label" parent="Header/Content/Player2Card/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 11
+text = "21 territórios"
 
 [node name="MapPanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 36.0
-offset_top = 120.0
-offset_right = -340.0
-offset_bottom = -36.0
+offset_left = 20.0
+offset_top = 104.0
+offset_right = -342.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MapController" type="Control" parent="MapPanel"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(520, 480)
 layout_mode = 2
-mouse_filter = 0
+clip_contents = true
 script = ExtResource("2")
 
-[node name="Sidebar" type="PanelContainer" parent="."]
+[node name="RightColumn" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 3
 anchor_left = 1.0
-anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -310.0
-offset_top = -512.0
-offset_right = -36.0
-offset_bottom = -36.0
-grow_horizontal = 0
-grow_vertical = 0
+offset_left = -330.0
+offset_right = -20.0
+offset_top = 104.0
+offset_bottom = -20.0
+theme_override_constants/separation = 12
 
-[node name="Content" type="VBoxContainer" parent="Sidebar"]
+[node name="Sidebar" type="PanelContainer" parent="RightColumn"]
 layout_mode = 2
-theme_override_constants/separation = 10
+size_flags_vertical = 3
 
-[node name="Heading" type="Label" parent="Sidebar/Content"]
+[node name="Content" type="VBoxContainer" parent="RightColumn/Sidebar"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Território selecionado"
+theme_override_constants/separation = 9
+
+[node name="Heading" type="Label" parent="RightColumn/Sidebar/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+text = "CENTRO DE COMANDO"
 autowrap_mode = 2
 
-[node name="SelectionLabel" type="Label" parent="Sidebar/Content"]
+[node name="SelectionLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Clique em um território do mapa."
 autowrap_mode = 2
 
-[node name="ReinforcementDetailLabel" type="Label" parent="Sidebar/Content"]
+[node name="ReinforcementDetailLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Reforços: 3 básicos + 0 de continentes"
 autowrap_mode = 2
 
-[node name="PlaceArmyButton" type="Button" parent="Sidebar/Content"]
+[node name="PlaceArmyButton" type="Button" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "+ Posicionar exército"
+text = "+  POSICIONAR EXÉRCITO"
 disabled = true
 
-[node name="AttackOriginLabel" type="Label" parent="Sidebar/Content"]
+[node name="AttackOriginLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Origem: nenhuma"
 autowrap_mode = 2
 
-[node name="AttackButton" type="Button" parent="Sidebar/Content"]
+[node name="AttackButton" type="Button" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Atacar território selecionado"
+text = "⚔  ATACAR TERRITÓRIO"
 disabled = true
 
-[node name="CombatResultLabel" type="Label" parent="Sidebar/Content"]
+[node name="CombatResultLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Na fase de ataque, selecione a origem e depois um vizinho inimigo."
 autowrap_mode = 2
 
-[node name="MovementSourceLabel" type="Label" parent="Sidebar/Content"]
+[node name="MovementSourceLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Origem: nenhuma"
 autowrap_mode = 2
 
-[node name="MovementAmount" type="SpinBox" parent="Sidebar/Content"]
+[node name="MovementAmount" type="SpinBox" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
@@ -149,31 +199,92 @@ value = 1.0
 allow_greater = false
 allow_lesser = false
 
-[node name="MoveArmiesButton" type="Button" parent="Sidebar/Content"]
+[node name="MoveArmiesButton" type="Button" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Remanejar exércitos"
+text = "↔  REMANEJAR EXÉRCITOS"
 disabled = true
 
-[node name="MovementStatusLabel" type="Label" parent="Sidebar/Content"]
+[node name="MovementStatusLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Um remanejamento é permitido por turno."
 autowrap_mode = 2
 
-[node name="AdvancePhaseButton" type="Button" parent="Sidebar/Content"]
+[node name="AdvancePhaseButton" type="Button" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Avançar para a próxima fase"
+text = "CONTINUAR  →"
 
-[node name="PhaseHintLabel" type="Label" parent="Sidebar/Content"]
+[node name="PhaseHintLabel" type="Label" parent="RightColumn/Sidebar/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 text = "Selecione um território para começar."
 autowrap_mode = 2
+
+[node name="ContinentPanel" type="PanelContainer" parent="RightColumn"]
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="RightColumn/ContinentPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="RightColumn/ContinentPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 16
+text = "BÔNUS CONTINENTAIS"
+
+[node name="Hint" type="Label" parent="RightColumn/ContinentPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.76, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Domine todos os territórios do continente"
+
+[node name="Grid" type="GridContainer" parent="RightColumn/ContinentPanel/Content"]
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 5
+columns = 2
+
+[node name="NorthAmerica" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.23, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ América N.   +5"
+
+[node name="Asia" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.83, 0.22, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ Ásia             +7"
+
+[node name="SouthAmerica" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.84, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ América S.   +2"
+
+[node name="Europe" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.36, 0.68, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ Europa         +5"
+
+[node name="Africa" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.49, 0.92, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ África           +3"
+
+[node name="Oceania" type="Label" parent="RightColumn/ContinentPanel/Content/Grid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.38, 0.68, 1)
+theme_override_font_sizes/font_size = 12
+text = "■ Oceania       +2"
 
 [node name="VictoryOverlay" type="ColorRect" parent="."]
 unique_name_in_owner = true
@@ -229,10 +340,10 @@ layout_mode = 2
 text = "Voltar ao menu"
 
 [connection signal="pressed" from="Header/Content/Back" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="Sidebar/Content/PlaceArmyButton" to="." method="_on_place_army_pressed"]
-[connection signal="pressed" from="Sidebar/Content/AttackButton" to="." method="_on_attack_pressed"]
-[connection signal="value_changed" from="Sidebar/Content/MovementAmount" to="." method="_on_movement_amount_value_changed"]
-[connection signal="pressed" from="Sidebar/Content/MoveArmiesButton" to="." method="_on_move_armies_pressed"]
-[connection signal="pressed" from="Sidebar/Content/AdvancePhaseButton" to="." method="_on_advance_phase_pressed"]
+[connection signal="pressed" from="RightColumn/Sidebar/Content/PlaceArmyButton" to="." method="_on_place_army_pressed"]
+[connection signal="pressed" from="RightColumn/Sidebar/Content/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="value_changed" from="RightColumn/Sidebar/Content/MovementAmount" to="." method="_on_movement_amount_value_changed"]
+[connection signal="pressed" from="RightColumn/Sidebar/Content/MoveArmiesButton" to="." method="_on_move_armies_pressed"]
+[connection signal="pressed" from="RightColumn/Sidebar/Content/AdvancePhaseButton" to="." method="_on_advance_phase_pressed"]
 [connection signal="pressed" from="VictoryOverlay/Center/Panel/Content/PlayAgain" to="." method="_on_play_again_pressed"]
 [connection signal="pressed" from="VictoryOverlay/Center/Panel/Content/MainMenu" to="." method="_on_back_pressed"]

@@ -1,23 +1,23 @@
 class_name TerritoryView
-extends Area2D
+extends Node2D
 
-signal pressed(territory_id: String)
 var territory: TerritoryData
 var owner_color: Color
 var selected := false
 var attack_source := false
 var movement_source := false
 @onready var shape: Polygon2D = $Shape
+@onready var shadow: Polygon2D = $Shadow
 @onready var border: Line2D = $Border
-@onready var collision: CollisionPolygon2D = $Collision
 @onready var name_label: Label = $NameLabel
 @onready var army_label: Label = $ArmyLabel
+@onready var army_badge: Polygon2D = $ArmyBadge
 
 func setup(data: TerritoryData, color: Color, points: PackedVector2Array) -> void:
 	territory = data
 	owner_color = color
+	shadow.polygon = points
 	shape.polygon = points
-	collision.polygon = points
 	border.points = points + PackedVector2Array([points[0]])
 	name_label.text = data.display_name
 	army_label.text = str(data.armies)
@@ -33,6 +33,12 @@ func setup(data: TerritoryData, color: Color, points: PackedVector2Array) -> voi
 	army_label.offset_top = center.y + 1.0
 	army_label.offset_right = center.x + 18.0
 	army_label.offset_bottom = center.y + 20.0
+	var badge_points: PackedVector2Array = []
+	for index in 16:
+		var angle := TAU * index / 16.0
+		badge_points.append(Vector2(cos(angle), sin(angle)) * 9.5)
+	army_badge.polygon = badge_points
+	army_badge.position = center + Vector2(0, 9)
 	name_label.add_theme_font_size_override("font_size", 8 if data.display_name.length() > 11 else 10)
 	army_label.add_theme_font_size_override("font_size", 13)
 	_refresh_color()
@@ -61,21 +67,12 @@ func _refresh_color() -> void:
 	shape.color = owner_color.lightened(0.18) if selected else owner_color
 	border.width = 3.5 if selected or attack_source or movement_source else 1.5
 	if selected:
-		border.default_color = Color.WHITE
+		border.default_color = Color("#ffd166")
 	elif attack_source:
 		border.default_color = Color("#f5c451")
 	elif movement_source:
 		border.default_color = Color("#5bd6a2")
 	else:
-		border.default_color = Color("#253249")
-
-func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		pressed.emit(territory.id)
-
-func _on_mouse_entered() -> void:
-	if not selected:
-		shape.color = owner_color.lightened(0.1)
-
-func _on_mouse_exited() -> void:
-	_refresh_color()
+		border.default_color = Color(0.78, 0.91, 0.94, 0.78)
+func contains_point(point: Vector2) -> bool:
+	return Geometry2D.is_point_in_polygon(point - position, shape.polygon)
