@@ -11,6 +11,8 @@ var territories: Dictionary = {}
 var turn := TurnManager.new()
 var selected_territory_id := ""
 var attack_source_id := ""
+var movement_source_id := ""
+var movement_used := false
 var winner_id := -1
 var rng := RandomNumberGenerator.new()
 
@@ -19,6 +21,8 @@ func setup(shuffle_territories: bool = true) -> void:
 	territories.clear()
 	selected_territory_id = ""
 	attack_source_id = ""
+	movement_source_id = ""
+	movement_used = false
 	winner_id = -1
 	turn = TurnManager.new()
 	rng.randomize()
@@ -112,6 +116,64 @@ func attack(source_id: String, target_id: String) -> Dictionary:
 		"moved_armies": moved_armies
 	}
 
+func choose_movement_source(territory_id: String) -> bool:
+	if turn.current_phase != TurnManager.Phase.MOVEMENT or movement_used or not territories.has(territory_id):
+		return false
+	var territory: TerritoryData = territories[territory_id]
+	var player := players[turn.current_player_index]
+	if territory.owner_id != player.id or territory.armies < 2:
+		return false
+	movement_source_id = territory_id
+	turn_updated.emit()
+	return true
+
+func can_move_armies(source_id: String, target_id: String, amount: int) -> bool:
+	if winner_id >= 0 or movement_used or turn.current_phase != TurnManager.Phase.MOVEMENT:
+		return false
+	if not territories.has(source_id) or not territories.has(target_id) or source_id == target_id:
+		return false
+	var source: TerritoryData = territories[source_id]
+	var target: TerritoryData = territories[target_id]
+	var player := players[turn.current_player_index]
+	if source.owner_id != player.id or target.owner_id != player.id:
+		return false
+	if amount < 1 or amount >= source.armies:
+		return false
+	return _has_owned_path(source_id, target_id, player.id)
+
+func move_armies(source_id: String, target_id: String, amount: int) -> bool:
+	if not can_move_armies(source_id, target_id, amount):
+		return false
+	var source: TerritoryData = territories[source_id]
+	var target: TerritoryData = territories[target_id]
+	source.armies -= amount
+	target.armies += amount
+	movement_used = true
+	movement_source_id = ""
+	territory_updated.emit(source)
+	territory_updated.emit(target)
+	turn_updated.emit()
+	return true
+
+func _has_owned_path(source_id: String, target_id: String, player_id: int) -> bool:
+	var pending: Array[String] = [source_id]
+	var visited: Dictionary = {}
+	visited[source_id] = true
+	while not pending.is_empty():
+		var current_id: String = pending.pop_front()
+		var current: TerritoryData = territories[current_id]
+		for neighbor_id: String in current.neighbor_ids:
+			if visited.has(neighbor_id):
+				continue
+			var neighbor: TerritoryData = territories[neighbor_id]
+			if neighbor.owner_id != player_id:
+				continue
+			if neighbor_id == target_id:
+				return true
+			visited[neighbor_id] = true
+			pending.append(neighbor_id)
+	return false
+
 func can_advance_phase() -> bool:
 	if winner_id >= 0:
 		return false
@@ -123,7 +185,11 @@ func advance_phase() -> bool:
 		return false
 	turn.advance_phase(players.size())
 	attack_source_id = ""
+	movement_source_id = ""
+	if turn.current_phase == TurnManager.Phase.MOVEMENT:
+		movement_used = false
 	if turn.current_phase == TurnManager.Phase.REINFORCEMENT:
+		movement_used = false
 		_grant_reinforcements_to_current_player()
 	turn_updated.emit()
 	return true

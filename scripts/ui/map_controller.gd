@@ -40,3 +40,7 @@ func refresh_territory(territory_id: String) -> void:
 func show_attack_source(territory_id: String) -> void:
 	for id: String in views:
 		views[id].set_attack_source(id == territory_id)
+
+func show_movement_source(territory_id: String) -> void:
+	for id: String in views:
+		views[id].set_movement_source(id == territory_id)

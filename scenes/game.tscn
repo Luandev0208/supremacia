@@ -127,19 +127,51 @@ layout_mode = 2
 text = "Na fase de ataque, selecione a origem e depois um vizinho inimigo."
 autowrap_mode = 2
 
+[node name="MovementSourceLabel" type="Label" parent="Sidebar/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Origem: nenhuma"
+autowrap_mode = 2
+
+[node name="MovementAmount" type="SpinBox" parent="Sidebar/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+min_value = 1.0
+max_value = 1.0
+value = 1.0
+allow_greater = false
+allow_lesser = false
+
+[node name="MoveArmiesButton" type="Button" parent="Sidebar/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Remanejar exércitos"
+disabled = true
+
+[node name="MovementStatusLabel" type="Label" parent="Sidebar/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Um remanejamento é permitido por turno."
+autowrap_mode = 2
+
 [node name="AdvancePhaseButton" type="Button" parent="Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 text = "Avançar para a próxima fase"
 
-[node name="Hint" type="Label" parent="Sidebar/Content"]
+[node name="PhaseHintLabel" type="Label" parent="Sidebar/Content"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-text = "Empates nos dados favorecem a defesa. É necessário manter pelo menos um exército no território de origem."
+text = "Selecione um território para começar."
 autowrap_mode = 2
 
 [connection signal="pressed" from="Header/Content/Back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="Sidebar/Content/PlaceArmyButton" to="." method="_on_place_army_pressed"]
 [connection signal="pressed" from="Sidebar/Content/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="value_changed" from="Sidebar/Content/MovementAmount" to="." method="_on_movement_amount_value_changed"]
+[connection signal="pressed" from="Sidebar/Content/MoveArmiesButton" to="." method="_on_move_armies_pressed"]
 [connection signal="pressed" from="Sidebar/Content/AdvancePhaseButton" to="." method="_on_advance_phase_pressed"]
