@@ -30,3 +30,7 @@ func _on_territory_pressed(territory_id: String) -> void:
 	if game_state.select_territory(territory_id):
 		for id: String in views:
 			views[id].set_selected(id == territory_id)
+
+func refresh_territory(territory_id: String) -> void:
+	if views.has(territory_id):
+		views[territory_id].refresh()

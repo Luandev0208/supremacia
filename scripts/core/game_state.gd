@@ -2,6 +2,8 @@ class_name GameState
 extends RefCounted
 
 signal territory_selected(territory: TerritoryData)
+signal territory_updated(territory: TerritoryData)
+signal turn_updated
 
 var players: Array[PlayerData] = []
 var territories: Dictionary = {}
@@ -17,6 +19,7 @@ func setup(randomize: bool = true) -> void:
 	players.append(PlayerData.new(1, "Jogador 2", Color("#3b82d0")))
 	_create_prototype_territories()
 	_distribute_territories(randomize)
+	_grant_reinforcements_to_current_player()
 
 func select_territory(territory_id: String) -> bool:
 	if not territories.has(territory_id):
@@ -31,6 +34,38 @@ func controlled_territory_count(player_id: int) -> int:
 		if territory.owner_id == player_id:
 			total += 1
 	return total
+
+func place_army(territory_id: String) -> bool:
+	if turn.current_phase != TurnManager.Phase.REINFORCEMENT:
+		return false
+	if not territories.has(territory_id):
+		return false
+	var player := players[turn.current_player_index]
+	var territory: TerritoryData = territories[territory_id]
+	if territory.owner_id != player.id or player.reserve_armies <= 0:
+		return false
+	territory.armies += 1
+	player.reserve_armies -= 1
+	territory_updated.emit(territory)
+	turn_updated.emit()
+	return true
+
+func can_advance_phase() -> bool:
+	var player := players[turn.current_player_index]
+	return turn.current_phase != TurnManager.Phase.REINFORCEMENT or player.reserve_armies == 0
+
+func advance_phase() -> bool:
+	if not can_advance_phase():
+		return false
+	turn.advance_phase(players.size())
+	if turn.current_phase == TurnManager.Phase.REINFORCEMENT:
+		_grant_reinforcements_to_current_player()
+	turn_updated.emit()
+	return true
+
+func _grant_reinforcements_to_current_player() -> void:
+	var player := players[turn.current_player_index]
+	player.reserve_armies = GameRules.reinforcement_count(controlled_territory_count(player.id))
 
 func _create_prototype_territories() -> void:
 	_add("aurora", "Aurora", "norte", ["brisa", "cedro"])

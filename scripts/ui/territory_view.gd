@@ -21,6 +21,10 @@ func setup(data: TerritoryData, color: Color, points: PackedVector2Array) -> voi
 	army_label.text = str(data.armies)
 	_refresh_color()
 
+func refresh() -> void:
+	army_label.text = str(territory.armies)
+	_refresh_color()
+
 func set_selected(value: bool) -> void:
 	selected = value
 	_refresh_color()

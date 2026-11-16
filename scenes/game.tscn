@@ -101,6 +101,19 @@ layout_mode = 2
 text = "Clique em um território do mapa."
 autowrap_mode = 2
 
+[node name="PlaceArmyButton" type="Button" parent="Sidebar/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "+ Posicionar exército"
+disabled = true
+
+[node name="AdvancePhaseButton" type="Button" parent="Sidebar/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Avançar para a próxima fase"
+
 [node name="Hint" type="Label" parent="Sidebar/Content"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -108,3 +121,5 @@ text = "As cores indicam os donos.\n\nCombate, posicionamento e movimentação s
 autowrap_mode = 2
 
 [connection signal="pressed" from="Header/Content/Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Sidebar/Content/PlaceArmyButton" to="." method="_on_place_army_pressed"]
+[connection signal="pressed" from="Sidebar/Content/AdvancePhaseButton" to="." method="_on_advance_phase_pressed"]
