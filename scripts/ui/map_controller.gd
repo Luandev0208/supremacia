@@ -14,6 +14,17 @@ var territory_layout: Dictionary = {
 var game_state: GameState
 var views: Dictionary = {}
 
+func _gui_input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
+		return
+	for territory_id: String in territory_layout:
+		var territory_position: Vector2 = territory_layout[territory_id][0]
+		var territory_polygon: PackedVector2Array = territory_layout[territory_id][1]
+		if Geometry2D.is_point_in_polygon(event.position - territory_position, territory_polygon):
+			_on_territory_pressed(territory_id)
+			accept_event()
+			return
+
 func build_map(state: GameState) -> void:
 	game_state = state
 	views.clear()

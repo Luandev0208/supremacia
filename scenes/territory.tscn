@@ -4,6 +4,7 @@
 
 [node name="Territory" type="Area2D"]
 script = ExtResource("1")
+input_pickable = true
 
 [node name="Shape" type="Polygon2D" parent="."]
 
@@ -39,3 +40,4 @@ horizontal_alignment = 1
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="input_event" from="." to="." method="_on_input_event"]
