@@ -101,6 +101,12 @@ layout_mode = 2
 text = "Clique em um território do mapa."
 autowrap_mode = 2
 
+[node name="ReinforcementDetailLabel" type="Label" parent="Sidebar/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reforços: 3 básicos + 0 de continentes"
+autowrap_mode = 2
+
 [node name="PlaceArmyButton" type="Button" parent="Sidebar/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
@@ -169,9 +175,82 @@ size_flags_vertical = 3
 text = "Selecione um território para começar."
 autowrap_mode = 2
 
+[node name="NorthLabel" type="Label" parent="MapPanel/MapController"]
+offset_left = 50.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.95, 0.78, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "NORTE  •  bônus +2"
+
+[node name="SouthLabel" type="Label" parent="MapPanel/MapController"]
+offset_left = 285.0
+offset_top = 430.0
+offset_right = 470.0
+offset_bottom = 460.0
+theme_override_colors/font_color = Color(0.95, 0.78, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "SUL  •  bônus +2"
+
+[node name="VictoryOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.015, 0.025, 0.045, 0.88)
+
+[node name="Center" type="CenterContainer" parent="VictoryOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="VictoryOverlay/Center"]
+custom_minimum_size = Vector2(470, 300)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="VictoryOverlay/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 22
+alignment = 1
+
+[node name="Heading" type="Label" parent="VictoryOverlay/Center/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.3, 1)
+theme_override_font_sizes/font_size = 36
+text = "SUPREMACIA CONQUISTADA"
+horizontal_alignment = 1
+
+[node name="VictoryTitle" type="Label" parent="VictoryOverlay/Center/Panel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Jogador venceu!"
+horizontal_alignment = 1
+
+[node name="PlayAgain" type="Button" parent="VictoryOverlay/Center/Panel/Content"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Jogar novamente"
+
+[node name="MainMenu" type="Button" parent="VictoryOverlay/Center/Panel/Content"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Voltar ao menu"
+
 [connection signal="pressed" from="Header/Content/Back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="Sidebar/Content/PlaceArmyButton" to="." method="_on_place_army_pressed"]
 [connection signal="pressed" from="Sidebar/Content/AttackButton" to="." method="_on_attack_pressed"]
 [connection signal="value_changed" from="Sidebar/Content/MovementAmount" to="." method="_on_movement_amount_value_changed"]
 [connection signal="pressed" from="Sidebar/Content/MoveArmiesButton" to="." method="_on_move_armies_pressed"]
 [connection signal="pressed" from="Sidebar/Content/AdvancePhaseButton" to="." method="_on_advance_phase_pressed"]
+[connection signal="pressed" from="VictoryOverlay/Center/Panel/Content/PlayAgain" to="." method="_on_play_again_pressed"]
+[connection signal="pressed" from="VictoryOverlay/Center/Panel/Content/MainMenu" to="." method="_on_back_pressed"]

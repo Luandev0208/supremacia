@@ -14,6 +14,8 @@ var attack_source_id := ""
 var movement_source_id := ""
 var movement_used := false
 var winner_id := -1
+var last_base_reinforcements := 0
+var last_continent_bonus := 0
 var rng := RandomNumberGenerator.new()
 
 func setup(shuffle_territories: bool = true) -> void:
@@ -24,6 +26,8 @@ func setup(shuffle_territories: bool = true) -> void:
 	movement_source_id = ""
 	movement_used = false
 	winner_id = -1
+	last_base_reinforcements = 0
+	last_continent_bonus = 0
 	turn = TurnManager.new()
 	rng.randomize()
 	players.append(PlayerData.new(0, "Jogador 1", Color("#e05a47")))
@@ -196,7 +200,9 @@ func advance_phase() -> bool:
 
 func _grant_reinforcements_to_current_player() -> void:
 	var player := players[turn.current_player_index]
-	player.reserve_armies = GameRules.reinforcement_count(controlled_territory_count(player.id))
+	last_base_reinforcements = GameRules.reinforcement_count(controlled_territory_count(player.id))
+	last_continent_bonus = GameRules.continent_bonus_count(player.id, territories)
+	player.reserve_armies = last_base_reinforcements + last_continent_bonus
 
 func _create_prototype_territories() -> void:
 	_add("aurora", "Aurora", "norte", ["brisa", "cedro"])

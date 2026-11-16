@@ -2,9 +2,20 @@ class_name GameRules
 extends RefCounted
 
 const MINIMUM_REINFORCEMENTS := 3
+const CONTINENT_BONUSES := {
+	"norte": 2,
+	"sul": 2
+}
 
 static func reinforcement_count(controlled_territories: int) -> int:
 	return maxi(MINIMUM_REINFORCEMENTS, floori(controlled_territories / 2.0))
+
+static func continent_bonus_count(player_id: int, territories: Dictionary) -> int:
+	var total := 0
+	for continent_id: String in CONTINENT_BONUSES:
+		if owns_continent(player_id, continent_id, territories):
+			total += CONTINENT_BONUSES[continent_id]
+	return total
 
 static func roll_dice(amount: int, random: RandomNumberGenerator) -> Array[int]:
 	var rolls: Array[int] = []

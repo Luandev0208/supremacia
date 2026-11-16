@@ -13,6 +13,9 @@ extends Control
 @onready var move_armies_button: Button = %MoveArmiesButton
 @onready var movement_status_label: Label = %MovementStatusLabel
 @onready var phase_hint_label: Label = %PhaseHintLabel
+@onready var reinforcement_detail_label: Label = %ReinforcementDetailLabel
+@onready var victory_overlay: Control = %VictoryOverlay
+@onready var victory_title: Label = %VictoryTitle
 var game_state := GameState.new()
 
 func _ready() -> void:
@@ -49,6 +52,8 @@ func _update_phase_controls() -> void:
 	movement_amount.visible = movement_phase
 	move_armies_button.visible = movement_phase
 	movement_status_label.visible = movement_phase
+	reinforcement_detail_label.visible = reinforcement_phase
+	reinforcement_detail_label.text = "Reforços: %d básicos + %d de continentes" % [game_state.last_base_reinforcements, game_state.last_continent_bonus]
 	if movement_phase:
 		movement_status_label.text = "Remanejamento realizado neste turno." if game_state.movement_used else "Um remanejamento é permitido por turno."
 	if reinforcement_phase:
@@ -127,6 +132,8 @@ func _on_game_finished(winner: PlayerData) -> void:
 	attack_button.disabled = true
 	place_army_button.disabled = true
 	move_armies_button.disabled = true
+	victory_title.text = "%s venceu!" % winner.display_name
+	victory_overlay.visible = true
 
 func _on_movement_amount_value_changed(_value: float) -> void:
 	_refresh_actions()
@@ -141,3 +148,6 @@ func _on_advance_phase_pressed() -> void:
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+func _on_play_again_pressed() -> void:
+	get_tree().reload_current_scene()
