@@ -32,7 +32,7 @@ func setup(shuffle_territories: bool = true) -> void:
 	rng.randomize()
 	players.append(PlayerData.new(0, "Jogador 1", Color("#e05a47")))
 	players.append(PlayerData.new(1, "Jogador 2", Color("#3b82d0")))
-	_create_prototype_territories()
+	_create_world_territories()
 	_distribute_territories(shuffle_territories)
 	_grant_reinforcements_to_current_player()
 
@@ -204,15 +204,55 @@ func _grant_reinforcements_to_current_player() -> void:
 	last_continent_bonus = GameRules.continent_bonus_count(player.id, territories)
 	player.reserve_armies = last_base_reinforcements + last_continent_bonus
 
-func _create_prototype_territories() -> void:
-	_add("aurora", "Aurora", "norte", ["brisa", "cedro"])
-	_add("brisa", "Brisa", "norte", ["aurora", "delta", "cedro"])
-	_add("cedro", "Cedro", "norte", ["aurora", "brisa", "estrela"])
-	_add("delta", "Delta", "norte", ["brisa", "farol"])
-	_add("estrela", "Estrela", "sul", ["cedro", "farol", "ilha"])
-	_add("farol", "Farol", "sul", ["delta", "estrela", "jardim"])
-	_add("ilha", "Ilha", "sul", ["estrela", "jardim"])
-	_add("jardim", "Jardim", "sul", ["farol", "ilha"])
+func _create_world_territories() -> void:
+	# América do Norte
+	_add("alaska", "Alaska", "america_norte", ["mackenzie", "vancouver", "vladivostok"])
+	_add("mackenzie", "Mackenzie", "america_norte", ["alaska", "vancouver", "ottawa", "groenlandia"])
+	_add("groenlandia", "Groenlândia", "america_norte", ["mackenzie", "ottawa", "labrador", "islandia"])
+	_add("vancouver", "Vancouver", "america_norte", ["alaska", "mackenzie", "ottawa", "california"])
+	_add("ottawa", "Ottawa", "america_norte", ["mackenzie", "groenlandia", "labrador", "vancouver", "california", "nova_york"])
+	_add("labrador", "Labrador", "america_norte", ["groenlandia", "ottawa", "nova_york"])
+	_add("california", "Califórnia", "america_norte", ["vancouver", "ottawa", "nova_york", "mexico"])
+	_add("nova_york", "Nova York", "america_norte", ["ottawa", "labrador", "california", "mexico"])
+	_add("mexico", "México", "america_norte", ["california", "nova_york", "colombia"])
+	# América do Sul
+	_add("colombia", "Colômbia", "america_sul", ["mexico", "brasil", "chile"])
+	_add("brasil", "Brasil", "america_sul", ["colombia", "chile", "argentina", "argelia_nigeria"])
+	_add("chile", "Chile", "america_sul", ["colombia", "brasil", "argentina"])
+	_add("argentina", "Argentina", "america_sul", ["chile", "brasil"])
+	# Europa
+	_add("islandia", "Islândia", "europa", ["groenlandia", "inglaterra", "suecia"])
+	_add("inglaterra", "Inglaterra", "europa", ["islandia", "suecia", "alemanha", "portugal"])
+	_add("suecia", "Suécia", "europa", ["islandia", "inglaterra", "alemanha", "polonia", "moscou"])
+	_add("alemanha", "Alemanha", "europa", ["inglaterra", "suecia", "polonia", "portugal"])
+	_add("polonia", "Polônia", "europa", ["alemanha", "suecia", "moscou", "oriente_medio", "egito"])
+	_add("portugal", "Portugal", "europa", ["inglaterra", "alemanha", "egito", "argelia_nigeria"])
+	_add("moscou", "Moscou", "europa", ["suecia", "polonia", "omsk", "aral", "oriente_medio"])
+	# África
+	_add("argelia_nigeria", "Argélia Nigéria", "africa", ["portugal", "egito", "sudao", "congo", "brasil"])
+	_add("egito", "Egito", "africa", ["argelia_nigeria", "portugal", "polonia", "oriente_medio", "sudao"])
+	_add("sudao", "Sudão", "africa", ["argelia_nigeria", "egito", "congo", "africa_sul", "oriente_medio", "madagascar"])
+	_add("congo", "Congo", "africa", ["argelia_nigeria", "sudao", "africa_sul"])
+	_add("africa_sul", "África do Sul", "africa", ["congo", "sudao", "madagascar"])
+	_add("madagascar", "Madagascar", "africa", ["sudao", "africa_sul"])
+	# Ásia
+	_add("oriente_medio", "Oriente Médio", "asia", ["moscou", "polonia", "egito", "sudao", "aral", "india"])
+	_add("aral", "Aral", "asia", ["moscou", "omsk", "mongolia", "china", "india", "oriente_medio"])
+	_add("omsk", "Omsk", "asia", ["moscou", "dudinka", "siberia", "tchita", "mongolia", "aral"])
+	_add("dudinka", "Dudinka", "asia", ["omsk", "siberia"])
+	_add("siberia", "Sibéria", "asia", ["dudinka", "omsk", "tchita", "vladivostok"])
+	_add("tchita", "Tchita", "asia", ["siberia", "omsk", "mongolia", "vladivostok"])
+	_add("mongolia", "Mongólia", "asia", ["omsk", "tchita", "aral", "vladivostok", "china", "japao"])
+	_add("vladivostok", "Vladivostok", "asia", ["siberia", "tchita", "mongolia", "japao", "alaska"])
+	_add("china", "China", "asia", ["aral", "mongolia", "india", "vietna", "japao"])
+	_add("india", "Índia", "asia", ["oriente_medio", "aral", "china", "vietna", "sumatra"])
+	_add("vietna", "Vietnã", "asia", ["india", "china", "borneu"])
+	_add("japao", "Japão", "asia", ["vladivostok", "mongolia", "china"])
+	# Oceania
+	_add("sumatra", "Sumatra", "oceania", ["india", "australia"])
+	_add("borneu", "Bornéu", "oceania", ["vietna", "nova_guine", "australia"])
+	_add("nova_guine", "Nova Guiné", "oceania", ["borneu", "australia"])
+	_add("australia", "Austrália", "oceania", ["sumatra", "borneu", "nova_guine"])
 
 func _add(id: String, label: String, continent: String, neighbors: Array[String]) -> void:
 	territories[id] = TerritoryData.new(id, label, continent, neighbors)

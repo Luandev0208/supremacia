@@ -3,8 +3,12 @@ extends RefCounted
 
 const MINIMUM_REINFORCEMENTS := 3
 const CONTINENT_BONUSES := {
-	"norte": 2,
-	"sul": 2
+	"asia": 7,
+	"europa": 5,
+	"africa": 3,
+	"oceania": 2,
+	"america_sul": 2,
+	"america_norte": 5
 }
 
 static func reinforcement_count(controlled_territories: int) -> int:

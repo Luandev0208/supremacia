@@ -29,8 +29,13 @@ func _ready() -> void:
 
 func _refresh_interface() -> void:
 	var player := game_state.players[game_state.turn.current_player_index]
-	turn_label.text = "Turno: %s  •  Fase: %s  •  Reserva: %d" % [player.display_name, game_state.turn.phase_name(), player.reserve_armies]
-	advance_phase_button.text = "Avançar para a próxima fase"
+	turn_label.text = "Rodada %d  •  %s  •  %s  •  Reserva: %d" % [game_state.turn.round_number, player.display_name, game_state.turn.phase_name(), player.reserve_armies]
+	if game_state.turn.round_number == 1:
+		advance_phase_button.text = "Encerrar posicionamento"
+	elif game_state.turn.round_number == 2:
+		advance_phase_button.text = "Encerrar ataques"
+	else:
+		advance_phase_button.text = "Avançar para a próxima fase"
 	advance_phase_button.disabled = not game_state.can_advance_phase()
 	attack_origin_label.text = "Origem: nenhuma" if game_state.attack_source_id.is_empty() else "Origem: %s" % game_state.territories[game_state.attack_source_id].display_name
 	movement_source_label.text = "Origem: nenhuma" if game_state.movement_source_id.is_empty() else "Origem: %s" % game_state.territories[game_state.movement_source_id].display_name
@@ -57,9 +62,9 @@ func _update_phase_controls() -> void:
 	if movement_phase:
 		movement_status_label.text = "Remanejamento realizado neste turno." if game_state.movement_used else "Um remanejamento é permitido por turno."
 	if reinforcement_phase:
-		phase_hint_label.text = "Selecione um território próprio e posicione toda a reserva."
+		phase_hint_label.text = "Primeira rodada: posicione toda a reserva em seus territórios." if game_state.turn.round_number == 1 else "Selecione um território próprio e posicione toda a reserva."
 	elif attack_phase:
-		phase_hint_label.text = "Selecione uma origem com dois ou mais exércitos e depois um vizinho inimigo."
+		phase_hint_label.text = "Segunda rodada: realize seus ataques ou encerre sua vez." if game_state.turn.round_number == 2 else "Selecione uma origem com dois ou mais exércitos e depois um vizinho inimigo."
 	else:
 		phase_hint_label.text = "Escolha a origem, o destino próprio conectado e a quantidade a mover."
 

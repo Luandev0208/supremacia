@@ -7,14 +7,25 @@ var current_phase := Phase.REINFORCEMENT
 var round_number := 1
 
 func advance_phase(player_count: int) -> void:
+	if round_number == 1:
+		_advance_player(player_count)
+		current_phase = Phase.ATTACK if round_number == 2 else Phase.REINFORCEMENT
+		return
+	if round_number == 2:
+		_advance_player(player_count)
+		current_phase = Phase.REINFORCEMENT if round_number == 3 else Phase.ATTACK
+		return
 	match current_phase:
 		Phase.REINFORCEMENT: current_phase = Phase.ATTACK
 		Phase.ATTACK: current_phase = Phase.MOVEMENT
 		Phase.MOVEMENT:
 			current_phase = Phase.REINFORCEMENT
-			current_player_index = (current_player_index + 1) % player_count
-			if current_player_index == 0:
-				round_number += 1
+			_advance_player(player_count)
+
+func _advance_player(player_count: int) -> void:
+	current_player_index = (current_player_index + 1) % player_count
+	if current_player_index == 0:
+		round_number += 1
 
 func phase_name() -> String:
 	match current_phase:
